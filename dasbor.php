@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMRS Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 bg-white shadow-lg flex flex-col min-h-screen transition-transform duration-200
+        fixed z-30 inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 md:flex">
+        <div class="p-6 border-b">
+            <span class="text-2xl font-bold text-blue-600">SIMRS</span>
+        </div>
+        <nav class="flex-1 p-4">
+            <ul class="space-y-2">
+                <li><a href="/dasbor" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">dashboard</span>Dasbor</a></li>
+                <li><a href="/users" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Users</a></li>
+                <li><a href="/patients" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Patients</a></li>
+                <li><a href="/logout" class="flex items-center px-4 py-2 rounded-lg text-red-600 hover:bg-red-100"><span class="material-icons mr-2">logout</span>Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <!-- Overlay for mobile -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-40 z-20 hidden md:hidden"></div>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col min-h-screen md:ml-0">
+        <!-- Header/Navbar -->
+        <header class="bg-white shadow p-4 flex items-center justify-between p-6 border-b">
+            <!-- Hamburger Button -->
+            <button id="sidebar-toggle" class="md:hidden mr-2 focus:outline-none">
+                <span class="material-icons text-3xl text-gray-700">menu</span>
+            </button>
+            <h1 class="text-xl font-semibold text-gray-800">Dashboard</h1>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-600">Hello, Admin</span>
+                <img src="https://ui-avatars.com/api/?name=User Avatar" alt="User Avatar" class="w-8 h-8 rounded-full">
+            </div>
+        </header>
+        <!-- Dashboard Content -->
+        <main class="flex-1 p-6">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-700">Welcome to SIMRS Dashboard</h2>
+                <p class="text-gray-500 mt-2">Manage hospital information efficiently and effectively.</p>
+            </div>
+            <!-- Example widgets -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="text-sm text-gray-500">Total Patients</div>
+                    <div class="text-2xl font-bold text-blue-600 mt-2">120</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="text-sm text-gray-500">Total Doctors</div>
+                    <div class="text-2xl font-bold text-green-600 mt-2">35</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="text-sm text-gray-500">Appointments Today</div>
+                    <div class="text-2xl font-bold text-purple-600 mt-2">18</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
