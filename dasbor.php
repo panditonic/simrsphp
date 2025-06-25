@@ -1,6 +1,19 @@
-
 <?php
+
 session_start();
+
+// Jika request POST AJAX ke /patients (misal untuk DataTable), langsung kirim JSON tanpa layout
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    strpos($_SERVER['REQUEST_URI'], 'patients') !== false &&
+    (
+        (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+        || (isset($_POST['draw'])) // DataTables biasanya mengirim parameter 'draw'
+    )
+) {
+    include 'modules/patients/index.php';
+    exit;
+}
 
 // Ambil nama user dari session, fallback ke "Admin"
 $displayName = 'Admin';
@@ -23,10 +36,10 @@ if (isset($_SESSION['user']['id'])) {
     header('Location: /login');
     exit;
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,6 +49,7 @@ if (isset($_SESSION['user']['id'])) {
     <!-- Google Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
+
 <body class="bg-gray-100 min-h-screen flex">
     <!-- Sidebar -->
     <aside id="sidebar" class="w-64 bg-white shadow-lg flex flex-col min-h-screen transition-transform duration-200
@@ -70,25 +84,14 @@ if (isset($_SESSION['user']['id'])) {
         </header>
         <!-- Dashboard Content -->
         <main class="flex-1 p-6">
-            <div class="mb-6">
-                <h2 class="text-2xl font-bold text-gray-700">Welcome to SIMRS Dashboard</h2>
-                <p class="text-gray-500 mt-2">Manage hospital information efficiently and effectively.</p>
-            </div>
-            <!-- Example widgets -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <div class="text-sm text-gray-500">Total Patients</div>
-                    <div class="text-2xl font-bold text-blue-600 mt-2">120</div>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <div class="text-sm text-gray-500">Total Doctors</div>
-                    <div class="text-2xl font-bold text-green-600 mt-2">35</div>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <div class="text-sm text-gray-500">Appointments Today</div>
-                    <div class="text-2xl font-bold text-purple-600 mt-2">18</div>
-                </div>
-            </div>
+            <?php
+            // Cek jika URL mengandung 'patients', maka load modules/patients/index.php
+            if (strpos($_SERVER['REQUEST_URI'], 'patients')) {
+                include 'modules/patients/index.php';
+            } else {
+                include 'home.php';
+            }
+            ?>
         </main>
     </div>
     <script>
@@ -107,3 +110,4 @@ if (isset($_SESSION['user']['id'])) {
         });
     </script>
 </body>
+</html>

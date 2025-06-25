@@ -4,6 +4,7 @@ RewriteEngine on
 
   # Redirect /users ke /modules/users/index.php
   RewriteRule ^users?$ users/index.php [L]
+  RewriteRule ^patients?$ dasbor.php [L]
 
   # 1) Redirect any “.php” URL to the extension-less URL
   #    e.g. /foo.php  →  /foo
