@@ -1,4 +1,30 @@
 
+<?php
+session_start();
+
+// Ambil nama user dari session, fallback ke "Admin"
+$displayName = 'Admin';
+if (isset($_SESSION['user']['id'])) {
+    // Koneksi ke DB (bisa gunakan class Database dari login.php)
+    $env = parse_ini_file(__DIR__ . '/.env');
+    $pdo = new PDO(
+        "mysql:host={$env['DB_HOST']};dbname={$env['DB_NAME']};charset=utf8mb4",
+        $env['DB_USER'],
+        $env['DB_PASS']
+    );
+    $stmt = $pdo->prepare("SELECT name FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['user']['id']]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row && !empty($row['name'])) {
+        $displayName = $row['name'];
+    }
+} else {
+    // Jika tidak ada session, redirect ke login
+    header('Location: /login');
+    exit;
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,8 +64,8 @@
             </button>
             <h1 class="text-xl font-semibold text-gray-800">Dashboard</h1>
             <div class="flex items-center space-x-4">
-                <span class="text-gray-600">Hello, Admin</span>
-                <img src="https://ui-avatars.com/api/?name=User Avatar" alt="User Avatar" class="w-8 h-8 rounded-full">
+                <span class="text-gray-600">Hello, <?= htmlspecialchars($displayName) ?></span>
+                <img src="https://ui-avatars.com/api/?name=<?= urlencode($displayName) ?>" alt="User Avatar" class="w-8 h-8 rounded-full">
             </div>
         </header>
         <!-- Dashboard Content -->
@@ -81,4 +107,3 @@
         });
     </script>
 </body>
-</html>

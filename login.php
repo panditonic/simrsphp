@@ -1,3 +1,27 @@
+<?php
+
+include 'db.php'; // Pastikan file db.php ada di direktori yang sama
+
+$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    try {
+        $db = new Database();
+        $user = $db->login($email, $password);
+        if ($user) {
+            $_SESSION['user'] = $user;
+            header('Location: dasbor');
+            exit;
+        } else {
+            $error = 'Email atau password salah.';
+        }
+    } catch (Exception $e) {
+        $error = 'Database error: ' . $e->getMessage();
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +40,10 @@
     <!-- Right panel: login form -->
     <div class="w-full md:w-1/2 p-8">
       <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center md:text-left">Sign In</h2>
-      <form action="#" method="POST" class="space-y-5">
+      <?php if ($error): ?>
+        <div class="mb-4 text-red-600 bg-red-100 rounded p-2 text-sm"><?= htmlspecialchars($error) ?></div>
+      <?php endif; ?>
+      <form action="" method="POST" class="space-y-5">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-600 mb-1">Email address</label>
           <input
