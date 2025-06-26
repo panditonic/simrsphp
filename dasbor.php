@@ -43,7 +43,7 @@ if (isset($_SESSION['user']['id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMRS Dashboard</title>
+    <title>SIMRS</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Material Icons -->
