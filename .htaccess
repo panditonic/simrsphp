@@ -1,20 +1,9 @@
 RewriteEngine on
 
-<IfModule mod_rewrite.c>
+# Rewrite /login to login.php
+RewriteRule ^login$ login.php [L,QSA]
 
-  # Redirect /users ke /modules/users/index.php
-  RewriteRule ^users?$ users/index.php [L]
-  RewriteRule ^patients?$ dasbor.php [L]
-
-  # 1) Redirect any “.php” URL to the extension-less URL
-  #    e.g. /foo.php  →  /foo
-  RewriteCond %{THE_REQUEST} \s/([^.]+)\.php[?\s] [NC]
-  RewriteRule ^ %1 [R=301,L]
-
-  # 2) Internally rewrite extension-less requests to “.php” files
-  #    e.g. /foo  →  /foo.php
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME}\.php -f
-  RewriteRule ^([^.]+)$ $1.php [L]
-</IfModule>
+# Route everything else (except existing files/directories) to modules.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)$ modules.php?module=$1 [L,QSA]

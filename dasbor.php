@@ -1,18 +1,7 @@
 <?php
 
-session_start();
-
-// Jika request POST AJAX ke /patients (misal untuk DataTable), langsung kirim JSON tanpa layout
-if (
-    $_SERVER['REQUEST_METHOD'] === 'POST' &&
-    strpos($_SERVER['REQUEST_URI'], 'patients') !== false &&
-    (
-        (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
-        || (isset($_POST['draw'])) // DataTables biasanya mengirim parameter 'draw'
-    )
-) {
-    include 'modules/patients/index.php';
-    exit;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
 // Ambil nama user dari session, fallback ke "Admin"
@@ -60,8 +49,8 @@ if (isset($_SESSION['user']['id'])) {
         <nav class="flex-1 p-4">
             <ul class="space-y-2">
                 <li><a href="/dasbor" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">dashboard</span>Dasbor</a></li>
-                <li><a href="/users" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Users</a></li>
-                <li><a href="/patients" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Patients</a></li>
+                <li><a href="/user" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Users</a></li>
+                <li><a href="/patient" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Patients</a></li>
                 <li><a href="/logout" class="flex items-center px-4 py-2 rounded-lg text-red-600 hover:bg-red-100"><span class="material-icons mr-2">logout</span>Logout</a></li>
             </ul>
         </nav>
@@ -84,14 +73,7 @@ if (isset($_SESSION['user']['id'])) {
         </header>
         <!-- Dashboard Content -->
         <main class="flex-1 p-6">
-            <?php
-            // Cek jika URL mengandung 'patients', maka load modules/patients/index.php
-            if (strpos($_SERVER['REQUEST_URI'], 'patients')) {
-                include 'modules/patients/index.php';
-            } else {
-                include 'home.php';
-            }
-            ?>
+            <?= $module_content ?>
         </main>
     </div>
     <script>

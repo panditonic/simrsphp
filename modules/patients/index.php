@@ -1,14 +1,12 @@
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Koneksi ke database
-    $env = parse_ini_file(__DIR__ . '/../../.env');
-    $pdo = new PDO(
-        "mysql:host={$env['DB_HOST']};dbname={$env['DB_NAME']};charset=utf8mb4",
-        $env['DB_USER'],
-        $env['DB_PASS']
-    );
+include_once __DIR__ . '/../../db.php';
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $db = new Database();
+    $pdo = $db->openConnection();
+
+    $action = $_GET['action'] ?? '';
     $action = $_GET['action'] ?? '';
 
     // Handle file upload for create & update
