@@ -15,6 +15,12 @@ switch ($module) {
     case 'patient':
         require_once __DIR__ . '/modules/patients/index.php';
         break;
+    case 'role':
+        require_once __DIR__ . '/modules/roles/index.php';
+        break;
+    case 'permission':
+        require_once __DIR__ . '/modules/permissions/index.php';
+        break;
     case 'logout':
         require_once __DIR__ . '/logout.php';
         break;

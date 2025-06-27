@@ -49,8 +49,10 @@ if (isset($_SESSION['user']['id'])) {
         <nav class="flex-1 p-4">
             <ul class="space-y-2">
                 <li><a href="/dasbor" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">dashboard</span>Dasbor</a></li>
-                <li><a href="/user" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Users</a></li>
-                <li><a href="/patient" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Patients</a></li>
+                <li><a href="/user" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Pengguna</a></li>
+                <li><a href="/role" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">lock</span>Role</a></li>
+                <li><a href="/permission" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">lock</span>Permission</a></li>
+                <li><a href="/patient" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Pasien</a></li>
                 <li><a href="/logout" class="flex items-center px-4 py-2 rounded-lg text-red-600 hover:bg-red-100"><span class="material-icons mr-2">logout</span>Logout</a></li>
             </ul>
         </nav>

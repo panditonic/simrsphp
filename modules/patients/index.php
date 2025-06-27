@@ -2,6 +2,11 @@
 
 include_once __DIR__ . '/../../db.php';
 
+$db = new Database();
+$pdo = $db->openConnection();
+
+include_once __DIR__ . '/../../modules/middlewares/RolePermissionChecker.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = new Database();
     $pdo = $db->openConnection();

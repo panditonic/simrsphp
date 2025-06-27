@@ -2,36 +2,40 @@
 
 include_once __DIR__ . '/../../db.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $db = new Database();
-    $pdo = $db->openConnection();
+$db = new Database();
+$pdo = $db->openConnection();
 
+include_once __DIR__ . '/../../modules/middlewares/RolePermissionChecker.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_GET['action'] ?? '';
 
     if ($action === 'create') {
-        $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
+        $stmt = $pdo->prepare("INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)");
         $stmt->execute([
             ':name' => $_POST['name'],
             ':email' => $_POST['email'],
-            ':password' => password_hash($_POST['password'], PASSWORD_DEFAULT)
+            ':password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
+            ':role' => $_POST['role']
         ]);
         echo json_encode(['success' => true]);
         exit;
     } elseif ($action === 'update') {
-        // If password is empty, don't update it
         if (!empty($_POST['password'])) {
-            $stmt = $pdo->prepare("UPDATE users SET name = :name, email = :email, password = :password WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE users SET name = :name, email = :email, password = :password, role = :role WHERE id = :id");
             $stmt->execute([
                 ':name' => $_POST['name'],
                 ':email' => $_POST['email'],
                 ':password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
+                ':role' => $_POST['role'],
                 ':id' => $_POST['id']
             ]);
         } else {
-            $stmt = $pdo->prepare("UPDATE users SET name = :name, email = :email WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE users SET name = :name, email = :email, role = :role WHERE id = :id");
             $stmt->execute([
                 ':name' => $_POST['name'],
                 ':email' => $_POST['email'],
+                ':role' => $_POST['role'],
                 ':id' => $_POST['id']
             ]);
         }
@@ -55,11 +59,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $where = '';
     $params = [];
     if ($search) {
-        $where = "WHERE name LIKE :search OR email LIKE :search";
+        $where = "WHERE users.name LIKE :search OR users.email LIKE :search";
         $params[':search'] = "%$search%";
     }
 
-    $stmt = $pdo->prepare("SELECT id, name, email FROM users $where LIMIT :start, :length");
+    $stmt = $pdo->prepare("SELECT users.id, users.name, users.email, users.role, roles.name AS role_name FROM users LEFT JOIN roles ON users.role = roles.id $where LIMIT :start, :length");
     foreach ($params as $k => $v) $stmt->bindValue($k, $v);
     $stmt->bindValue(':start', $start, PDO::PARAM_INT);
     $stmt->bindValue(':length', $length, PDO::PARAM_INT);
@@ -84,6 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ]);
     die();
 }
+
+// Fetch all roles for the select dropdown
+$roles = $pdo->query("SELECT id, name FROM roles ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
@@ -96,6 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <tr>
             <th>Nama</th>
             <th>Email</th>
+            <th>Role</th>
             <th>Aksi</th>
         </tr>
     </thead>
@@ -110,6 +118,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="text" name="name" placeholder="Nama" required class="w-full border rounded px-3 py-2" />
             <input type="email" name="email" placeholder="Email" required class="w-full border rounded px-3 py-2" />
             <input type="password" name="password" placeholder="Password" class="w-full border rounded px-3 py-2" autocomplete="new-password" />
+            <select name="role" id="role" required class="w-full border rounded px-3 py-2">
+                <option value="">Pilih Role</option>
+                <?php foreach ($roles as $role): ?>
+                    <option value="<?= htmlspecialchars($role['id']) ?>"><?= htmlspecialchars($role['name']) ?></option>
+                <?php endforeach; ?>
+            </select>
             <div class="flex justify-end gap-2 pt-2">
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan</button>
                 <button type="button" onclick="hideForm()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Batal</button>
@@ -126,10 +140,12 @@ function showForm(data = {}) {
     $('#userForm')[0].reset();
     $('#userForm input[type=hidden], #userForm input[type=text], #userForm input[type=email]').val('');
     $('#userForm input[type=password]').val('');
+    $('#role').val('');
     if (data && Object.keys(data).length) {
         for (let k in data) {
             if (k !== 'password') $('#userForm [name="' + k + '"]').val(data[k]);
         }
+        if (data.role) $('#role').val(data.role);
     }
     $('#modalBackdrop').removeClass('hidden');
     $('#formModal').removeClass('hidden');
@@ -164,6 +180,7 @@ let table = $('#usersTable').DataTable({
     columns: [
         { data: 'name' },
         { data: 'email' },
+        { data: 'role_name', defaultContent: '-' },
         {
             data: null,
             render: function(data, type, row) {
