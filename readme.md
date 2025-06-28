@@ -12,7 +12,7 @@ semoga bermanfaat untuk siapapun tanpa batas.
 | ![welcome](preview/3.dasbor.png)     | ![welcome](preview/4.masterdata.png) |
 
 ## begini fiturnya
-- [ x ] bisa login pastinya
-- [ x ] role permission access
-- [ x ] bpjs vclaim cek nik (biar berobat mudah)
-- [ o ] lain-lain sesuai fungsi minimal saja
+- [x] Bisa login pastinya
+- [x] Role permission access
+- [x] BPJS VClaim cek NIK (biar berobat mudah)
+- [ ] Lain-lain sesuai fungsi minimal saja
