@@ -102,6 +102,7 @@ function hideForm() {
 let table = $('#doctorsTable').DataTable({
     processing: true,
     serverSide: true,
+    ordering: false, // <--- Tambahkan baris ini untuk disable sorting
     ajax: {
         url: window.location.pathname,
         type: 'POST'

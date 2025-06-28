@@ -112,6 +112,7 @@ function showNotif(message, type = 'success') {
 let table = $('#usersTable').DataTable({
     processing: true,
     serverSide: true,
+    ordering: false, // <--- Tambahkan baris ini untuk disable sorting
     ajax: {
         url: window.location.pathname,
         type: 'POST'

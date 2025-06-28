@@ -14,5 +14,6 @@ semoga bermanfaat untuk siapapun tanpa batas.
 ## begini fiturnya
 - [x] Bisa login pastinya
 - [x] Role permission access
-- [x] BPJS VClaim cek NIK (biar berobat mudah)
+- [x] BPJS VClaim cek NIK (biar pasien mudah berobat di rumkit)
+- [x] SatuSehat cek NIK (biar pasien terdata di kemkes)
 - [ ] Lain-lain sesuai fungsi minimal saja

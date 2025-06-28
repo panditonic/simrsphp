@@ -33,6 +33,8 @@ if (isset($_SESSION['user']['id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIMRS</title>
+    <!-- Favicon from Google Material Icons -->
+    <link rel="icon" href="https://img.icons8.com/?size=100&id=4PbFeZOKAc61&format=png&color=000000" type="image/svg+xml">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Material Icons -->

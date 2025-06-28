@@ -3,6 +3,9 @@
 include_once __DIR__ . '/../../modules/middlewares/RolePermissionChecker.php';
 include_once __DIR__ . '/services.php';
 
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../observers/SatusehatObserver.php';
+
 $patientService = new PatientService();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -11,6 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'cek_nik') {
         $result = $patientService->cekBPJSByNoNik($_POST['no_nik']);
         echo json_encode($result);
+        exit;
+    }
+
+    if ($action === 'cek_satusehat') {
+        $observer = new SatusehatObserver();
+        $satusehatId = $observer->searchSatusehatIdByNik($_POST['nik']);
+        echo json_encode($satusehatId);
         exit;
     } elseif ($action === 'cek_bpjs') {
         $result = $patientService->cekBPJSByNoBpjs($_POST['no_bpjs']);
@@ -52,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <th>No RM</th>
             <th>No NIK</th> <!-- Added -->
             <th>No BPJS</th> <!-- Added -->
+            <th>No SatuSehat</th> <!-- Added -->
             <th>Nama Lengkap</th>
             <th>Alamat</th>
             <th>Telepon</th>
@@ -75,6 +86,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="flex gap-2">
                 <input type="text" name="no_bpjs" id="no_bpjs" placeholder="No BPJS" class="w-full border rounded px-3 py-2" />
                 <!-- <button type="button" onclick="cekBPJS()" class="bg-blue-500 text-white px-2 py-1 rounded">Cek BPJS</button> -->
+            </div>
+            <div class="flex gap-2">
+                <input type="text" name="satusehat" id="satusehat" placeholder="No SatuSehat" class="w-full border rounded px-3 py-2" />
             </div>
             <input type="text" name="nama_lengkap" placeholder="Nama Lengkap" required class="w-full border rounded px-3 py-2" />
             <input type="text" name="nama_panggilan" placeholder="Nama Panggilan" class="w-full border rounded px-3 py-2" />
@@ -114,9 +128,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $('[name="telepon"]').val(res.peserta.mr && res.peserta.mr.noTelepon ? res.peserta.mr.noTelepon : '');
                 // Add more fields as needed
             } else {
-                alert('Data tidak ditemukan atau format salah!');
+                alert('Data BPJS tidak ditemukan atau format salah!');
             }
         }, 'json');
+
+        getSatusehatIdByNik(no_nik);
+    }
+
+    function getSatusehatIdByNik(nik) {
+        $.ajax({
+            url: window.location.pathname + '?action=cek_satusehat', // Buat endpoint PHP ini
+            type: 'POST',
+            data: {
+                nik: nik
+            },
+            dataType: 'json',
+            success: function(res) {
+                if (res && res.id) {
+                    $('#satusehat').val(res.id);
+                } else {
+                    $('#satusehat').val('');
+                    alert('No SatuSehat tidak ditemukan untuk NIK ini.');
+                }
+            },
+            error: function() {
+                $('#satusehat').val('');
+                alert('Gagal mengambil data SatuSehat.');
+            }
+        });
     }
 
     function cekBPJS() {
@@ -154,6 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         processing: true,
         serverSide: true,
         responsive: true, // <-- Add this line
+        ordering: false, // <--- Tambahkan baris ini untuk disable sorting
         ajax: {
             url: window.location.pathname,
             type: 'POST'
@@ -168,6 +208,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 data: 'no_bpjs'
             }, // Added
             {
+                data: 'satusehat'
+            },
+            {
                 data: 'nama_lengkap'
             },
             {
@@ -180,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 data: 'foto',
                 render: d => d ? `<img src="${d}" width="40">` : ''
             },
-            
+
             {
                 data: null,
                 render: function(data, type, row) {
