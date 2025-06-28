@@ -21,6 +21,9 @@ switch ($module) {
     case 'permission':
         require_once __DIR__ . '/modules/permissions/index.php';
         break;
+    case 'doctor':
+        require_once __DIR__ . '/modules/doctors/index.php';
+        break;
     case 'logout':
         require_once __DIR__ . '/logout.php';
         break;

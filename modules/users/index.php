@@ -1,96 +1,35 @@
 <?php
 
-include_once __DIR__ . '/../../db.php';
-
-$db = new Database();
-$pdo = $db->openConnection();
-
 include_once __DIR__ . '/../../modules/middlewares/RolePermissionChecker.php';
+include_once __DIR__ . '/services.php';
+
+$userService = new UserService();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_GET['action'] ?? '';
 
     if ($action === 'create') {
-        $stmt = $pdo->prepare("INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)");
-        $stmt->execute([
-            ':name' => $_POST['name'],
-            ':email' => $_POST['email'],
-            ':password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
-            ':role' => $_POST['role']
-        ]);
+        $userService->create($_POST);
         echo json_encode(['success' => true]);
         exit;
     } elseif ($action === 'update') {
-        if (!empty($_POST['password'])) {
-            $stmt = $pdo->prepare("UPDATE users SET name = :name, email = :email, password = :password, role = :role WHERE id = :id");
-            $stmt->execute([
-                ':name' => $_POST['name'],
-                ':email' => $_POST['email'],
-                ':password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
-                ':role' => $_POST['role'],
-                ':id' => $_POST['id']
-            ]);
-        } else {
-            $stmt = $pdo->prepare("UPDATE users SET name = :name, email = :email, role = :role WHERE id = :id");
-            $stmt->execute([
-                ':name' => $_POST['name'],
-                ':email' => $_POST['email'],
-                ':role' => $_POST['role'],
-                ':id' => $_POST['id']
-            ]);
-        }
+        $userService->update($_POST);
         echo json_encode(['success' => true]);
         exit;
     } elseif ($action === 'delete') {
-        $stmt = $pdo->prepare("DELETE FROM users WHERE id = :id");
-        $stmt->execute([':id' => $_POST['id']]);
+        $userService->delete($_POST['id']);
         echo json_encode(['success' => true]);
         exit;
     }
 
     // DataTables logic
-    $start = intval($_POST['start'] ?? 0);
-    $length = intval($_POST['length'] ?? 10);
-    $search = $_POST['search']['value'] ?? '';
-
-    $totalQuery = $pdo->query("SELECT COUNT(*) FROM users");
-    $recordsTotal = $totalQuery->fetchColumn();
-
-    $where = '';
-    $params = [];
-    if ($search) {
-        $where = "WHERE users.name LIKE :search OR users.email LIKE :search";
-        $params[':search'] = "%$search%";
-    }
-
-    $stmt = $pdo->prepare("SELECT users.id, users.name, users.email, users.role, roles.name AS role_name FROM users LEFT JOIN roles ON users.role = roles.id $where LIMIT :start, :length");
-    foreach ($params as $k => $v) $stmt->bindValue($k, $v);
-    $stmt->bindValue(':start', $start, PDO::PARAM_INT);
-    $stmt->bindValue(':length', $length, PDO::PARAM_INT);
-    $stmt->execute();
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Query filtered count
-    if ($where) {
-        $countStmt = $pdo->prepare("SELECT COUNT(*) FROM users $where");
-        foreach ($params as $k => $v) $countStmt->bindValue($k, $v);
-        $countStmt->execute();
-        $recordsFiltered = $countStmt->fetchColumn();
-    } else {
-        $recordsFiltered = $recordsTotal;
-    }
-
-    echo json_encode([
-        "draw" => intval($_POST['draw'] ?? 1),
-        "recordsTotal" => $recordsTotal,
-        "recordsFiltered" => $recordsFiltered,
-        "data" => $data
-    ]);
+    $result = $userService->getDataTable($_POST);
+    echo json_encode($result);
     die();
 }
 
 // Fetch all roles for the select dropdown
-$roles = $pdo->query("SELECT id, name FROM roles ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
+$roles = $userService->getRoles();
 ?>
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">

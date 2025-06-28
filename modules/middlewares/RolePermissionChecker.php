@@ -1,5 +1,10 @@
 <?php
 
+include_once __DIR__ . '/../../db.php';
+
+$db = new Database();
+$pdo = $db->openConnection();
+
 // echo $_SESSION['user']['role_name'];exit;
 
 // Ambil role user saat ini
