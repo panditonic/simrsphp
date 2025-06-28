@@ -1,17 +1,28 @@
 <?php
 
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../observers/BpjsObserver.php';
 
-// Contoh test sederhana untuk BpjsObserver
-$bpjs = new BpjsObserver();
+// Load .env
+$env = parse_ini_file(__DIR__ . '/../.env');
+$cons_id = $env['BPJS_CONS_ID'] ?? '';
+$secret_key = $env['BPJS_SECRET_KEY'] ?? '';
 
-// Test: Cari peserta berdasarkan nomor kartu (isi dengan data BPJS yang valid)
-$noKartu = '0000000000000'; // Ganti dengan nomor kartu BPJS yang valid
+$bpjs = new BpjsObserver();
+$timestamp = $bpjs->getTimestamp();
+
+$noKartu = '0001078287658'; // Ganti dengan nomor kartu BPJS yang valid
 $tglSep = date('Y-m-d');
 
 echo "Test cari peserta by no kartu:\n";
 $result = $bpjs->cariPesertaByNoKartu($noKartu, $tglSep);
+
 print_r($result);
+
+$key = $cons_id . $secret_key . $timestamp;
+$response = $result['response'];
+
+echo "hasil: " . ($bpjs->decompress($bpjs->stringDecrypt($key, $response)));
 
 // // Test: Insert SEP (isi dengan data sesuai format BPJS VClaim)
 // $dataInsert = [

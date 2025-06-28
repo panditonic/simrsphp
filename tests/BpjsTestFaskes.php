@@ -1,15 +1,14 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php'; // Pastikan path sesuai struktur project Anda
-use LZCompressor\LZString;
-
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../observers/BpjsObserver.php';
 
-// Inisialisasi BpjsObserver
-$bpjs = new BpjsObserver();
+// Load .env
+$env = parse_ini_file(__DIR__ . '/../.env');
+$cons_id = $env['BPJS_CONS_ID'] ?? '';
+$secret_key = $env['BPJS_SECRET_KEY'] ?? '';
 
-$cons_id = '16606'; // Ganti dengan cons_id BPJS Anda
-$secret_key = '8fN87CB58A'; // Ganti dengan secret_key BPJS Anda
+$bpjs = new BpjsObserver();
 $timestamp = $bpjs->getTimestamp();
 
 // Parameter referensi faskes
