@@ -58,18 +58,26 @@ class KunjunganService {
         $length = intval($params['length'] ?? 10);
         $search = $params['search']['value'] ?? '';
 
-        $where = '';
+        $where = [];
         $bindParams = [];
+
         if ($search) {
-            $where = "WHERE k.diagnosa LIKE :search OR k.keluhan LIKE :search OR d.nama LIKE :search OR p.nama_lengkap LIKE :search";
+            $where[] = "(k.diagnosa LIKE :search OR k.keluhan LIKE :search OR d.nama LIKE :search OR p.nama_lengkap LIKE :search)";
             $bindParams[':search'] = "%$search%";
         }
+        if (!empty($params['filter_start'])) {
+            $where[] = "DATE(k.tanggal_waktu) >= :filter_start";
+            $bindParams[':filter_start'] = $params['filter_start'];
+        }
+        if (!empty($params['filter_end'])) {
+            $where[] = "DATE(k.tanggal_waktu) <= :filter_end";
+            $bindParams[':filter_end'] = $params['filter_end'];
+        }
+        $whereSql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-        // Hitung total
         $totalQuery = $this->pdo->query("SELECT COUNT(*) FROM kunjungans");
         $recordsTotal = $totalQuery->fetchColumn();
 
-        // Query data dengan join
         $sql = "SELECT 
                     k.*, 
                     d.nama AS dokter_nama, 
@@ -77,8 +85,8 @@ class KunjunganService {
                 FROM kunjungans k
                 LEFT JOIN doctors d ON k.dokter_id = d.id
                 LEFT JOIN patients p ON k.pasien_id = p.id
-                $where
-                ORDER BY k.id DESC
+                $whereSql
+                ORDER BY k.tanggal_waktu ASC
                 LIMIT :start, :length";
         $stmt = $this->pdo->prepare($sql);
         foreach ($bindParams as $k => $v) $stmt->bindValue($k, $v);
@@ -87,12 +95,12 @@ class KunjunganService {
         $stmt->execute();
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        // Hitung filtered
-        if ($where) {
+        // Filtered count
+        if ($whereSql) {
             $countStmt = $this->pdo->prepare("SELECT COUNT(*) FROM kunjungans k
                 LEFT JOIN doctors d ON k.dokter_id = d.id
                 LEFT JOIN patients p ON k.pasien_id = p.id
-                $where");
+                $whereSql");
             foreach ($bindParams as $k => $v) $countStmt->bindValue($k, $v);
             $countStmt->execute();
             $recordsFiltered = $countStmt->fetchColumn();

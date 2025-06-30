@@ -10,7 +10,7 @@ $pdo = $db->openConnection();
 // Endpoint AJAX untuk select2 dokter
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'dokter') {
     $term = $_GET['term'] ?? '';
-    $stmt = $pdo->prepare("SELECT id, nama FROM doctors WHERE nama LIKE :term LIMIT 20");
+    $stmt = $pdo->prepare("SELECT id, nama FROM doctors WHERE nama LIKE :term LIMIT 5");
     $stmt->execute([':term' => "%$term%"]);
     $results = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -23,7 +23,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'dokter') {
 // Endpoint AJAX untuk select2 pasien
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'pasien') {
     $term = $_GET['term'] ?? '';
-    $stmt = $pdo->prepare("SELECT id, nama_lengkap as nama FROM patients WHERE nama_lengkap LIKE :term LIMIT 20");
+    $stmt = $pdo->prepare("SELECT id, nama_lengkap as nama FROM patients WHERE nama_lengkap LIKE :term LIMIT 5");
     $stmt->execute([':term' => "%$term%"]);
     $results = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // DataTables logic
+    // Tambahkan filter tanggal ke parameter getDataTable
     $result = $kunjunganService->getDataTable($_POST);
     echo json_encode($result);
     die();
@@ -64,6 +64,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<div class="flex flex-wrap items-center justify-end gap-2 mb-4">
+    <label for="filter_start" class="text-gray-700 text-sm">Tanggal Awal</label>
+    <input type="date" id="filter_start" class="border rounded px-2 py-1" placeholder="Tanggal Mulai">
+    <label for="filter_end" class="text-gray-700 text-sm">Tanggal Akhir</label>
+    <input type="date" id="filter_end" class="border rounded px-2 py-1" placeholder="Tanggal Akhir">
+    <button id="filterBtn" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Filter</button>
+    <button id="resetBtn" class="bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500">Reset</button>
+</div>
 
 <button onclick="showForm()" class="mb-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Tambah Kunjungan</button>
 <table id="kunjunganTable" class="display" style="width:100%">
@@ -188,11 +197,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ordering: false,
         ajax: {
             url: window.location.pathname,
-            type: 'POST'
+            type: 'POST',
+            data: function(d) {
+                d.filter_start = $('#filter_start').val();
+                d.filter_end = $('#filter_end').val();
+            }
         },
         columns: [
-            { data: 'dokter_nama' },   // tampilkan nama dokter
-            { data: 'pasien_nama' },   // tampilkan nama pasien
+            { data: 'dokter_nama' },
+            { data: 'pasien_nama' },
             { data: 'tanggal_waktu' },
             { data: 'diagnosa' },
             { data: 'keluhan' },
@@ -207,6 +220,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 orderable: false
             }
         ]
+    });
+
+    $('#filterBtn').on('click', function() {
+        table.ajax.reload();
+    });
+    $('#resetBtn').on('click', function() {
+        $('#filter_start').val('');
+        $('#filter_end').val('');
+        table.ajax.reload();
     });
 
     $('#kunjunganForm').submit(function(e) {
