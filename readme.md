@@ -9,11 +9,11 @@ semoga bermanfaat untuk siapapun tanpa batas.
 ## begini tampilannya
 | ![welcome](preview/1.welcome.png)    | ![welcome](preview/2.login.png)      |
 |--------------------------------------|--------------------------------------|
-| ![welcome](preview/3.dasbor.png)     | ![welcome](preview/4.masterdata.png) |
+| ![welcome](preview/3.dasbor.png)     | ![welcome](preview/6.kunjungans.png) |
 
 ## begini fiturnya
 - [x] Bisa login pastinya
 - [x] Role permission access
 - [x] BPJS VClaim cek NIK (biar pasien mudah berobat di rumkit)
-- [x] SatuSehat cek NIK (biar pasien terdata di kemkes)
+- [x] Kemkes SatuSehat cek NIK (biar pasien terdata di kemkes)
 - [ ] Lain-lain sesuai fungsi minimal saja
