@@ -56,6 +56,7 @@ if (isset($_SESSION['user']['id'])) {
                 <li><a href="/permission" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">lock</span>Permission</a></li>
                 <li><a href="/patient" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Pasien</a></li>
                 <li><a href="/doctor" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Dokter</a></li>
+                <li><a href="/kunjungan" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"><span class="material-icons mr-2">people</span>Kunjungan</a></li>
                 <li><a href="/logout" class="flex items-center px-4 py-2 rounded-lg text-red-600 hover:bg-red-100"><span class="material-icons mr-2">logout</span>Logout</a></li>
             </ul>
         </nav>
