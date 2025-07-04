@@ -28,9 +28,10 @@ class PatientService
     public function create($data, $files)
     {
         $fotoPath = $this->handleUpload($files);
+        $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
         $stmt = $this->pdo->prepare("INSERT INTO patients 
-            (no_rm, no_nik, no_bpjs, nama_lengkap, nama_panggilan, alamat, telepon, foto, nama_ayah, nama_ibu, nama_penanggung_jawab, kontak_penanggung_jawab) 
-            VALUES (:no_rm, :no_nik, :no_bpjs, :nama_lengkap, :nama_panggilan, :alamat, :telepon, :foto, :nama_ayah, :nama_ibu, :nama_penanggung_jawab, :kontak_penanggung_jawab)");
+            (no_rm, no_nik, no_bpjs, nama_lengkap, nama_panggilan, alamat, telepon, foto, nama_ayah, nama_ibu, nama_penanggung_jawab, kontak_penanggung_jawab, email, password) 
+            VALUES (:no_rm, :no_nik, :no_bpjs, :nama_lengkap, :nama_panggilan, :alamat, :telepon, :foto, :nama_ayah, :nama_ibu, :nama_penanggung_jawab, :kontak_penanggung_jawab, :email, :password)");
         $stmt->execute([
             ':no_rm' => $data['no_rm'],
             ':no_nik' => $data['no_nik'] ?? '',
@@ -44,13 +45,14 @@ class PatientService
             ':nama_ibu' => $data['nama_ibu'],
             ':nama_penanggung_jawab' => $data['nama_penanggung_jawab'],
             ':kontak_penanggung_jawab' => $data['kontak_penanggung_jawab'],
+            ':email' => $data['email'],
+            ':password' => $hashedPassword,
         ]);
         return true;
     }
 
     public function update($data, $files)
     {
-        // Get old foto if not uploading new
         $fotoPath = $data['foto'] ?? '';
         if (empty($fotoPath) && !empty($data['id'])) {
             $stmt = $this->pdo->prepare("SELECT foto FROM patients WHERE id = :id");
@@ -58,23 +60,8 @@ class PatientService
             $fotoPath = $stmt->fetchColumn();
         }
         $fotoPath = $this->handleUpload($files, $fotoPath);
-
-        $stmt = $this->pdo->prepare("UPDATE patients SET 
-            no_rm = :no_rm,
-            no_nik = :no_nik,
-            no_bpjs = :no_bpjs,
-            satusehat = :satusehat,
-            nama_lengkap = :nama_lengkap,
-            nama_panggilan = :nama_panggilan,
-            alamat = :alamat,
-            telepon = :telepon,
-            foto = :foto,
-            nama_ayah = :nama_ayah,
-            nama_ibu = :nama_ibu,
-            nama_penanggung_jawab = :nama_penanggung_jawab,
-            kontak_penanggung_jawab = :kontak_penanggung_jawab
-            WHERE id = :id");
-        $stmt->execute([
+        $updatePassword = '';
+        $params = [
             ':no_rm' => $data['no_rm'],
             ':no_nik' => $data['no_nik'] ?? '',
             ':no_bpjs' => $data['no_bpjs'] ?? '',
@@ -88,8 +75,31 @@ class PatientService
             ':nama_ibu' => $data['nama_ibu'],
             ':nama_penanggung_jawab' => $data['nama_penanggung_jawab'],
             ':kontak_penanggung_jawab' => $data['kontak_penanggung_jawab'],
+            ':email' => $data['email'],
             ':id' => $data['id'],
-        ]);
+        ];
+        if (!empty($data['password'])) {
+            $updatePassword = ', password = :password';
+            $params[':password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
+        $stmt = $this->pdo->prepare("UPDATE patients SET 
+            no_rm = :no_rm,
+            no_nik = :no_nik,
+            no_bpjs = :no_bpjs,
+            satusehat = :satusehat,
+            nama_lengkap = :nama_lengkap,
+            nama_panggilan = :nama_panggilan,
+            alamat = :alamat,
+            telepon = :telepon,
+            foto = :foto,
+            nama_ayah = :nama_ayah,
+            nama_ibu = :nama_ibu,
+            nama_penanggung_jawab = :nama_penanggung_jawab,
+            kontak_penanggung_jawab = :kontak_penanggung_jawab,
+            email = :email
+            $updatePassword
+            WHERE id = :id");
+        $stmt->execute($params);
         return true;
     }
 

@@ -1,6 +1,5 @@
 <?php
 
-include_once __DIR__ . '/../../modules/middlewares/RolePermissionChecker.php';
 include_once __DIR__ . '/services.php';
 
 // Ambil data dokter dan pasien untuk dropdown
@@ -100,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <select style="width: 100%;" name="dokter_id" id="dokter_id" required class="w-full border rounded px-3 py-2 select2"></select>
             <select style="width: 100%;" name="pasien_id" id="pasien_id" required class="w-full border rounded px-3 py-2 select2"></select>
             <!-- ...existing code... -->
-            <input type="datetime-local" name="tanggal_waktu" placeholder="Tanggal & Waktu" required class="w-full border rounded px-3 py-2" />
+            <input type="date" name="tanggal_waktu" placeholder="Tanggal & Waktu" required class="w-full border rounded px-3 py-2" />
             <input type="text" name="diagnosa" placeholder="Diagnosa" required class="w-full border rounded px-3 py-2" />
             <input type="text" name="keluhan" placeholder="Keluhan" class="w-full border rounded px-3 py-2" />
             <input type="text" name="tindakan" placeholder="Tindakan" class="w-full border rounded px-3 py-2" />

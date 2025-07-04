@@ -1,6 +1,5 @@
 <?php
 
-include_once __DIR__ . '/../../modules/middlewares/RolePermissionChecker.php';
 include_once __DIR__ . '/services.php';
 
 $userService = new UserService();

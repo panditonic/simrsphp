@@ -1,5 +1,7 @@
 <?php
 
+include_once __DIR__ . '/modules/middlewares/RolePermissionChecker.php';
+
 // Simple PHP modules router
 
 $module = isset($_GET['module']) ? $_GET['module'] : 'dasbor';
@@ -26,6 +28,9 @@ switch ($module) {
         break;
     case 'kunjungan':
         require_once __DIR__ . '/modules/kunjungans/index.php';
+        break;
+    case 'api':
+        require_once __DIR__ . '/modules/apis/index.php';
         break;
     case 'logout':
         require_once __DIR__ . '/logout.php';

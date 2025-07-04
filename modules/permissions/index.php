@@ -5,8 +5,6 @@ include_once __DIR__ . '/../../db.php';
 $db = new Database();
 $pdo = $db->openConnection();
 
-include_once __DIR__ . '/../../modules/middlewares/RolePermissionChecker.php';
-
 ?>
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">

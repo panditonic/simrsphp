@@ -1,6 +1,5 @@
 <?php
 
-include_once __DIR__ . '/../../modules/middlewares/RolePermissionChecker.php';
 include_once __DIR__ . '/services.php';
 
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -100,6 +99,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="text" name="nama_ibu" placeholder="Nama Ibu" class="w-full border rounded px-3 py-2" />
             <input type="text" name="nama_penanggung_jawab" placeholder="Nama Penanggung Jawab" class="w-full border rounded px-3 py-2" />
             <input type="text" name="kontak_penanggung_jawab" placeholder="Kontak Penanggung Jawab" class="w-full border rounded px-3 py-2" />
+            <input type="text" name="email" placeholder="Email" required class="w-full border rounded px-3 py-2" />
+            <input type="password" name="password" placeholder="Password" required class="w-full border rounded px-3 py-2" />
             <div class="flex justify-end gap-2 pt-2">
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan</button>
                 <button type="button" onclick="hideForm()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Batal</button>
